@@ -1,5 +1,5 @@
 # Gemfile
-repo_url = 'https://raw.githubusercontent.com/otukutun/rails-template/master'
+repo_url = 'https://github.com/TEMONA/template.git/master'
 
 # 認証・権限関連
 if yes?('use devise ?')
@@ -14,11 +14,11 @@ if yes?('use devise ?')
   rake 'db:migrate'
 end
 
-if yes?('use sorcery ?')
-  gem 'sorcery'
-  generate 'sorcery:install'
-  rake 'db:migrate'
-end
+#if yes?('use sorcery ?')
+#  gem 'sorcery'
+#  generate 'sorcery:install'
+#  rake 'db:migrate'
+#end
 
 # DB関連
 gem 'pg'                  # postgresql用ドライバ
@@ -147,10 +147,20 @@ run "rm README.rdoc"
 
 # .gitignore
 remove_file '.gitignore'
-#get "#{repo_url}/gitignore", '.gitignore'
+get "#{repo_url}/gitignore", '.gitignore'
 
-# .pryrc
-#get "#{repo_url}/pryrc", '.pryrc'
+# action mailer周りを変更
+remove_file '/config/environments/development.rb'
+get "#{repo_url}/config/environments/development.rb", '/config/environments/development.rb'
+remove_file '/config/environments/production.rb'
+get "#{repo_url}/config/environments/production.rb", '/config/environments/production.rb'
+
+# deviseの対応
+remove_file '/config/locales/ja.yml'
+get "#{repo_url}/config/locales/ja.yml", '/config/locales/ja.yml'
+# filterの対象に:password_confirmationも追加
+remove_file '/config/initializers/filter_parameter_logging.rb'
+get "#{repo_url}/config/initializers/filter_parameter_logging.rb", '/config/initializers/filter_parameter_logging.rb'
 
 # git initalize setting
 after_bundle do
