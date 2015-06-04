@@ -1,24 +1,138 @@
 # Gemfile
-repo_url = 'https://github.com/TEMONA/template.git/master'
+repo_url = 'https://raw.githubusercontent.com/TEMONA/template/master'
 
-# 認証・権限関連
-if yes?('use devise ?')
-  gem 'devise'
-  gem 'devise-i18n'
-  gem 'devise_invitable'
-  gem 'pundit'
-  generate 'devise:install'
-  model_name = ask("What would you like the user model to be called? [admin_user]")
-  model_name = "admin_user" if model_name.blank?
-  generate "devise", model_name
-  rake 'db:migrate'
+
+# rm unused files
+run "rm README.rdoc"
+
+# アプリ名の取得
+@app_name = app_name
+
+append_file '.gitignore', <<-CODE
+# Created by https://www.gitignore.io
+
+### OSX ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
+### Linux ###
+*~
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+
+### Ruby ###
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/test/tmp/
+/test/version_tmp/
+/tmp/
+
+## Specific to RubyMotion:
+.dat*
+.repl_history
+build/
+
+## Documentation cache and generated files:
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/
+
+## Environment normalisation:
+/.bundle/
+/lib/bundler/man/
+
+# for a library or gem, you might want to ignore these files since the code is
+# intended to run in multiple environments; otherwise, check them in:
+# Gemfile.lock
+# .ruby-version
+# .ruby-gemset
+
+# unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
+.rvmrc
+
+
+config/settings.local.yml
+config/settings/*.local.yml
+config/environments/*.local.yml
+CODE
+
+# add to Gemfile
+run 'echo "" > Gemfile'
+append_file 'Gemfile', <<-CODE
+source 'https://rubygems.org'
+
+# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'rails', '4.2.1'
+# Use sqlite3 as the database for Active Record
+#gem 'sqlite3'
+# Use SCSS for stylesheets
+gem 'sass-rails', '~> 5.0'
+# Use Uglifier as compressor for JavaScript assets
+gem 'uglifier', '>= 1.3.0'
+# Use CoffeeScript for .coffee assets and views
+gem 'coffee-rails', '~> 4.1.0'
+# See https://github.com/rails/execjs#readme for more supported runtimes
+# gem 'therubyracer', platforms: :ruby
+
+# Use jquery as the JavaScript library
+gem 'jquery-rails'
+# Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
+gem 'turbolinks'
+# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
+gem 'jbuilder', '~> 2.0'
+# bundle exec rake doc:rails generates the API under doc/api.
+gem 'sdoc', '~> 0.4.0', group: :doc
+
+# Use ActiveModel has_secure_password
+gem 'bcrypt', '~> 3.1.7'
+
+# Use Unicorn as the app server
+gem 'unicorn'
+
+# Use Capistrano for deployment
+# gem 'capistrano-rails', group: :development
+
+group :development, :test do
+  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem 'byebug'
+
+  # Access an IRB console on exception pages or by using <%= console %> in views
+  gem 'web-console', '~> 2.0'
+
+  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  gem 'spring'
 end
-
-#if yes?('use sorcery ?')
-#  gem 'sorcery'
-#  generate 'sorcery:install'
-#  rake 'db:migrate'
-#end
 
 # DB関連
 gem 'pg'                  # postgresql用ドライバ
@@ -26,6 +140,12 @@ gem 'paranoia'            # 論理削除
 gem 'activerecord-import' # bulkインサート
 gem 'redis'
 gem 'redis-namespace'
+
+# 認証関連
+gem 'devise'
+gem 'devise-i18n'
+gem 'devise_invitable'
+gem 'pundit'
 
 # フォーム関連
 gem 'simple_form', '~> 3.1.0.rc1'
@@ -58,31 +178,25 @@ gem 'draper'
 # 設定関連
 # gem 'rails_config'
 gem 'figaro', '>= 1.0.0.rc1'
+gem 'whenever', require: false
 
-gem 'carrierwave'
-gem 'fog'
-
-gem 'versionist' # api versioning
 
 # モデルヘルパー
 gem 'draper'
 gem 'kaminari' # pagination
 
-# grape
-if yes?('use grape ?')
-  gem 'grape'
-  gem 'grape-jbuilder'
-  gem 'grape-rails-routes'
-end
+# API
+gem 'grape'
+gem 'grape-jbuilder'
+gem 'grape-rails-routes'
 
-gem_group :development do
-
-  # 開発を効率化する関連
+group :development do
+# 開発を効率化する関連
   gem 'guard-livereload', require: false # ソースを修正するとブラウザが自動でロードされ、画面を作るときに便利
   gem 'guard-bundler'      # bundlerの自動化
   gem 'guard-rails'        # railsの自動化
   gem 'guard-rspec'        # rspecの自動化
-  gem 'html2haml'          # 
+  gem 'html2slim'          # slimに変換してくれる
   gem 'rails-erd'                        # rake-erdコマンドでActiveRecordからER図を作成できる
   gem 'bullet'                           # n+1問題を発見
   gem 'rack-mini-profiler'               # ボトルネック計測
@@ -98,10 +212,11 @@ gem_group :development do
   gem 'capistrano-rvm', '~> 0.1.1'
   gem 'capistrano3-unicorn'
   gem 'colorize_unpermitted_parameters'
-
+  gem 'erb2haml'
+  gem 'haml2slim'
 end
 
-gem_group :development, :test do
+group :development, :test do
   # pry関連(デバッグなど便利)
   gem 'pry-rails'    # rails cの対話式コンソールがirbの代わりにリッチなpryになる
   gem 'pry-doc'      # pry中に show-source [method名] でソース内を読める
@@ -125,6 +240,8 @@ gem_group :development, :test do
   gem 'selenium-webdriver'  # webdriver
   gem 'rspec-rails'        # rspec本体
   gem 'rspec-json_matcher' 
+  gem 'webmock'
+  gem 'vcr'
   gem 'spring-commands-rspec'  # bin/rspecコマンドを使えるようにし、rspecの起動を早めれる
   gem "shoulda-matchers"   # モデルのテストを簡易にかけるmatcherが使える
   gem "factory_girl_rails" # テストデータ作成
@@ -137,30 +254,108 @@ gem_group :development, :test do
   gem "json_spec"          # rspecを拡張する
 end
 
-# rspec initalize setting
-run 'bundle install'
-run 'rm -rf test'
+CODE
+
+# install gems
+run 'bundle install --path vendor/bundle --jobs=4'
+
+# set config/application.rb
+application  do
+  %q{
+    # Set timezone
+    config.time_zone = 'Tokyo'
+    config.active_record.default_timezone = :local
+
+    # 日本語化
+    I18n.enforce_available_locales = true
+    config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}').to_s]
+    config.i18n.default_locale = :ja
+
+    # generatorの設定
+    config.generators do |g|
+      g.orm :active_record
+      g.template_engine :haml
+      g.test_framework  :rspec, :fixture => true
+      g.fixture_replacement :factory_girl, :dir => "spec/factories"
+      g.view_specs false
+      g.controller_specs true
+      g.routing_specs false
+      g.helper_specs false
+      g.request_specs false
+      g.assets false
+      g.helper false
+    end
+
+    # libファイルの自動読み込み
+    config.autoload_paths += %W(#{config.root}/lib)
+    config.autoload_paths += Dir["#{config.root}/lib/**/"]
+  }
+end
+
+# For Bullet (N+1 Problem)
+insert_into_file 'config/environments/development.rb',%(
+  # Bulletの設定
+  config.after_initialize do
+    Bullet.enable = true # Bulletプラグインを有効
+    Bullet.alert = true # JavaScriptでの通知
+    Bullet.bullet_logger = true # log/bullet.logへの出力
+    Bullet.console = true # ブラウザのコンソールログに記録
+    Bullet.rails_logger = true # Railsログに出力
+  end
+), after: 'config.assets.debug = true'
+
+# erb => slim
+run 'bundle exec erb2slim -d app/views'
+
+# Simple Form
+generate 'simple_form:install --bootstrap'
+
+# Whenever
+run 'wheneverize .'
+
+# Capistrano
+run 'bundle exec cap install'
+
+# # Kaminari config
+# generate 'kaminari:config'
+
+# run 'bundle exec rake RAILS_ENV=development db:create'
+
+# Rspec/Spring/Guard
+# ----------------------------------------------------------------
+# Rspec
 generate 'rspec:install'
+run "echo '--color -f d' > .rspec"
 
-# rm unused files
-run "rm README.rdoc"
+insert_into_file 'spec/spec_helper.rb',%(
+  config.before :suite do
+    DatabaseRewinder.clean_all
+  end
 
-# .gitignore
-remove_file '.gitignore'
-get "#{repo_url}/gitignore", '.gitignore'
+  config.after :each do
+    DatabaseRewinder.clean
+  end
 
-# action mailer周りを変更
-remove_file '/config/environments/development.rb'
-get "#{repo_url}/config/environments/development.rb", '/config/environments/development.rb'
-remove_file '/config/environments/production.rb'
-get "#{repo_url}/config/environments/production.rb", '/config/environments/production.rb'
+  config.before :all do
+    FactoryGirl.reload
+    FactoryGirl.factories.clear
+    FactoryGirl.sequences.clear
+    FactoryGirl.find_definitions
+  end
 
-# deviseの対応
-remove_file '/config/locales/ja.yml'
-get "#{repo_url}/config/locales/ja.yml", '/config/locales/ja.yml'
-# filterの対象に:password_confirmationも追加
-remove_file '/config/initializers/filter_parameter_logging.rb'
-get "#{repo_url}/config/initializers/filter_parameter_logging.rb", '/config/initializers/filter_parameter_logging.rb'
+  config.include FactoryGirl::Syntax::Methods
+
+  VCR.configure do |c|
+      c.cassette_library_dir = 'spec/vcr'
+      c.hook_into :webmock
+      c.allow_http_connections_when_no_cassette = true
+  end
+), after: 'RSpec.configure do |config|'
+
+insert_into_file 'spec/spec_helper.rb', "\nrequire 'factory_girl_rails'", after: "require 'rspec/rails'"
+gsub_file 'spec/spec_helper.rb', "require 'rspec/autorun'", ''
+
+run 'bundle install'
 
 # git initalize setting
 after_bundle do
