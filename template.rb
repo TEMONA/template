@@ -1,6 +1,5 @@
 # Gemfile
-repo_url = 'https://raw.githubusercontent.com/TEMONA/template/master'
-
+repo_url = 'https://raw.githubusercontent.com/TEMONA/rails_template/master'
 
 # rm unused files
 run "rm README.rdoc"
@@ -8,84 +7,8 @@ run "rm README.rdoc"
 # アプリ名の取得
 @app_name = app_name
 
-append_file '.gitignore', <<-CODE
-# Created by https://www.gitignore.io
-
-### OSX ###
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must end with two \r
-Icon
-
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-
-### Linux ###
-*~
-
-# KDE directory preferences
-.directory
-
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
-
-
-### Ruby ###
-*.gem
-*.rbc
-/.config
-/coverage/
-/InstalledFiles
-/pkg/
-/spec/reports/
-/test/tmp/
-/test/version_tmp/
-/tmp/
-
-## Specific to RubyMotion:
-.dat*
-.repl_history
-build/
-
-## Documentation cache and generated files:
-/.yardoc/
-/_yardoc/
-/doc/
-/rdoc/
-
-## Environment normalisation:
-/.bundle/
-/lib/bundler/man/
-
-# for a library or gem, you might want to ignore these files since the code is
-# intended to run in multiple environments; otherwise, check them in:
-# Gemfile.lock
-# .ruby-version
-# .ruby-gemset
-
-# unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
-.rvmrc
-
-
-config/settings.local.yml
-config/settings/*.local.yml
-config/environments/*.local.yml
-CODE
+remove_file '.gitignore'
+get "#{repo_url}/.gitignore", '.gitignore'
 
 # add to Gemfile
 run 'echo "" > Gemfile'
@@ -97,16 +20,16 @@ gem 'rails', '4.2.1'
 # Use sqlite3 as the database for Active Record
 #gem 'sqlite3'
 # Use SCSS for stylesheets
-gem 'sass-rails', '~> 5.0'
+#gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
+#gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
-gem 'coffee-rails', '~> 4.1.0'
+#gem 'coffee-rails', '~> 4.1.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
 # Use jquery as the JavaScript library
-gem 'jquery-rails'
+#gem 'jquery-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
@@ -161,7 +84,6 @@ gem 'haml-rails'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'font-awesome-rails'
-gem 'coffee-rails', '~> 4.1.0'
 gem 'lazy_high_charts'
 
 gem 'jquery-rails'
@@ -174,6 +96,7 @@ gem 'enumerize'
 gem 'inherited_resources'
 gem 'has_scope'
 gem 'draper'
+gem 'kaminari' # pagination
 
 # 設定関連
 # gem 'rails_config'
@@ -182,8 +105,6 @@ gem 'whenever', require: false
 
 
 # モデルヘルパー
-gem 'draper'
-gem 'kaminari' # pagination
 
 # API
 gem 'grape'
@@ -260,75 +181,19 @@ CODE
 run 'bundle install --path vendor/bundle --jobs=4'
 
 # database.yml
-run 'echo "" > config/database.yml'
-append_file 'config/database.yml' <<-CODE
-# PostgreSQL. Versions 8.2 and up are supported.
-#
-# Install the pg driver:
-#   gem install pg
-# On Mac OS X with macports:
-#   gem install pg -- --with-pg-config=/opt/local/lib/postgresql84/bin/pg_config
-# On Windows:
-#   gem install pg
-#       Choose the win32 build.
-#       Install PostgreSQL and put its /bin directory on your path.
-#
-# Configure Using Gemfile
-# gem 'pg'
-#
-development:
-  adapter:  postgresql
-  host:     127.0.0.1
-  encoding: unicode
-  database: template_development
-  pool:     5
-  username: template
-  password: template
-  template: template0
+remove_file 'config/database.yml'
 
-  # Connect on a TCP socket. Omitted by default since the client uses a
-  # domain socket that doesn't need configuration. Windows does not have
-  # domain sockets, so uncomment these lines.
-  #host: localhost
-  #port: 5432
+get "#{repo_url}/database_postgresql.yml", 'config/database.yml'
+puts "#{repo_url}/database_postgresql.yml"
+gsub_file 'config/database.yml', "template_development", "#{app_name}_development"
+gsub_file 'config/database.yml', "template_test", "#{app_name}_test"
+gsub_file 'config/database.yml', "template_production", "#{app_name}_production"
 
-  # Schema search path. The server defaults to $user,public
-  #schema_search_path: myapp,sharedapp,public
 
-  # Minimum log levels, in increasing order:
-  #   debug5, debug4, debug3, debug2, debug1,
-  #   log, notice, warning, error, fatal, and panic
-  # The server defaults to notice.
-  #min_messages: warning
-
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
-test:
-  adapter:  postgresql
-  host:     127.0.0.1
-  encoding: unicode
-  database: template_test
-  pool:     5
-  username: template
-  password: template
-  template: template0
-
-production:
-  adapter:  postgresql
-  host:     127.0.0.1
-  encoding: unicode
-  database: template_production
-  pool:     5
-  username: template
-  password: template
-  template: template0
-CODE
-
-gsub_file 'config/database.yml', "template_development", '#{@app_name}_development'
-gsub_file 'config/database.yml', "template_test", '#{@app_name}_test'
-gsub_file 'config/database.yml', "template_production", '#{@app_name}_production'
-
+# rubocop
+get "#{repo_url}/.rubocop.yml", '.rubocop.yml'
+get "#{repo_url}/.rubocop_disabled.yml", '.rubocop_disabled.yml'
+get "#{repo_url}/.rubocop_enabled.yml", '.rubocop_enabled.yml'
 
 # set config/application.rb
 application  do
