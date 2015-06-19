@@ -79,6 +79,7 @@ gem 'carrierwave'
 gem 'mini_magick'
 
 # view関連
+gem 'slim-rails'
 gem 'bootstrap-sass'
 gem 'haml-rails'
 gem 'sass-rails', '~> 5.0'
