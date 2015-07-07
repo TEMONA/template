@@ -209,7 +209,6 @@ application  do
     # libファイルの自動読み込み
     config.autoload_paths += %W(#{config.root}/lib)
     config.autoload_paths += Dir["#{config.root}/lib/**/"]
-    config.assets.paths += "#{Rails}/vendor/assets/fonts"
   }
 end
 
@@ -245,11 +244,11 @@ generate 'bootstrap:install less'
 generate 'bootstrap:layout application fluid'
 
 # glyphicons
-run 'wget https://github.com/twbs/bootstrap/releases/download/v3.3.2/bootstrap-3.3.2-dist.zip'
-run 'unzip bootstrap-3.3.2-dist.zip'
-run 'rm -rf bootstrap-3.3.2-dist.zip'
-run 'mv bootstrap-3.3.2-dist/fonts /bootstrap3/vendor/assets/'
-run 'rm -rf bootstrap-3.3.2-dist'
+#run 'wget https://github.com/twbs/bootstrap/releases/download/v3.3.4/bootstrap-3.3.4-dist.zip'
+#run 'unzip bootstrap-3.3.2-dist.zip'
+#run 'rm -rf bootstrap-3.3.2-dist.zip'
+#run 'mv bootstrap-3.3.2-dist/fonts /bootstrap3/vendor/assets/'
+#run 'rm -rf bootstrap-3.3.2-dist'
 
 # Kaminari config
 generate 'kaminari:config'
