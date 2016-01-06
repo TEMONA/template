@@ -16,7 +16,7 @@ append_file 'Gemfile', <<-CODE
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.1'
+gem 'rails', '4.2.4'
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
@@ -43,7 +43,7 @@ group :development, :test do
 end
 
 # DB関連
-gem 'mysql2'              # mysql用ドライバ
+gem 'mysql2', '~> 0.3.20' # mysql用ドライバ
 gem 'multi_db'            # マルチDB対応
 gem 'rails-observers'
 gem 'paranoia'            # 論理削除
@@ -67,7 +67,8 @@ gem 'carrierwave'
 gem 'mini_magick'
 
 # view関連
-gem "less-rails"
+gem 'less-rails'
+gem 'sprockets-rails', '2.3.3'
 gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git', :branch => "bootstrap3"
 gem 'slim-rails'
 gem 'uglifier', '>= 1.3.0'
